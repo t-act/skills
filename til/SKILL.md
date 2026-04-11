@@ -3,7 +3,7 @@ name: til
 description: 今日のgit活動を複数リポジトリから収集し、TILエントリのドラフトを生成して追記する
 user-invocable: true
 disable-model-invocation: true
-allowed-tools: Bash(git *), Bash(ls *), Bash(date *), Read, Edit, Write, AskUserQuestion
+allowed-tools: Bash(git *), Bash(ls *), Bash(date *), Bash(for *), Read, Edit, Write, AskUserQuestion
 ---
 
 ## Context
@@ -47,8 +47,10 @@ MMDD
 ```
 
 ドラフト生成の指針:
-- リポジトリ名やコミットメッセージから、何を学習したかを簡潔に要約する
-- 過去のエントリのトーン・粒度に合わせる（例: 「deep-learning-2」「ts入門」「Udemy（ファインチューニング）」のような簡潔な表現）
+- 「リポジトリ名（トピックキーワード）」の形式で書く
+  - 例: `deep-learning-2（Seq2Seq、PeekyDecoder実装）`、`ts入門（型ガード、ジェネリクス）`
+  - コミットメッセージから章・テーマ・キーワードを抽出してカッコ内に要約する
+  - カッコ内は短く、1〜3個のキーワード程度にする
 - 同一リポジトリへの複数コミットは1行にまとめる
 - コミットが0件の場合は `- No` とする
 
@@ -58,7 +60,7 @@ MMDD
 - 生成したドラフトを表示する
 - AskUserQuestion で以下を同時に確認する:
   - ドラフトの内容: 「このまま追記」「編集してから追記」「キャンセル」
-  - コミット: 「追記後にコミットする」「追記のみ（コミットしない）」
+  - コミット＆プッシュ: 「追記後にコミット＆プッシュする」「追記のみ（コミットしない）」
 
 ### Step 4: TILファイルへの追記とコミット
 
@@ -67,7 +69,9 @@ MMDD
 - 今日の日付のエントリが既に存在する場合:
   - 既存エントリを上書きする
 - Edit ツールで末尾に追記する
-- Step 3 でコミットを選択した場合: `update: YYYY-MM-DD` 形式でコミットする（既存の慣習に従う）
+- Step 3 でコミット＆プッシュを選択した場合:
+  - `update: YYYY-MM-DD` 形式でコミットする（既存の慣習に従う）
+  - コミット後に `git push` でリモートにプッシュする
 
 ## Constraint
 
