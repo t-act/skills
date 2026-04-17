@@ -3,7 +3,7 @@ name: readme
 description: プロジェクトのREADME.mdを対話的に作成・更新する。マニフェストから技術スタックを自動検出し、diff形式のプレビューで承認を得てから書き込む
 user-invocable: true
 disable-model-invocation: true
-allowed-tools: Bash(ls *), Bash(cat *), Bash(diff *), Bash(find *), Read, Write, Edit, Glob, Grep, AskUserQuestion
+allowed-tools: Bash(ls *), Bash(cat *), Bash(diff *), Bash(find *), Bash(git *), Read, Write, Edit, Glob, Grep, AskUserQuestion
 ---
 
 ## Context
@@ -11,6 +11,8 @@ allowed-tools: Bash(ls *), Bash(cat *), Bash(diff *), Bash(find *), Read, Write,
 - Working directory: !`pwd`
 - 既存README有無: !`ls README.md 2>/dev/null || echo "NOT_FOUND"`
 - マニフェストファイル検出: !`ls package.json pyproject.toml requirements.txt Cargo.toml go.mod Gemfile composer.json 2>/dev/null || true`
+- .gitignore: !`cat .gitignore 2>/dev/null || echo "NOT_FOUND"`
+- git追跡対象トップレベル: !`git ls-files 2>/dev/null | awk -F/ '{print $1}' | sort -u || true`
 - ディレクトリ構成（2階層）: !`find . -maxdepth 2 -type d -not -path '*/node_modules*' -not -path '*/.git*' -not -path '*/dist*' -not -path '*/build*' -not -path '*/.next*' -not -path '*/__pycache__*' -not -path '*/target*' | sort`
 
 ## Your task
@@ -22,9 +24,18 @@ README.mdを作成または差分更新します。既存があれば言語を�
 - `README.md` が存在すれば Read で読み込み、使用言語（日本語/英語）を判定
 - 無ければ新規作成モード（言語は日本語をデフォルト）
 
-### 2. プロジェクト情報の自動検出
+### 2. 除外対象の判定（最優先）
 
-検出されたマニフェストを Read して以下を抽出：
+`.gitignore` と `git ls-files` の結果から、README に記載してはいけない項目を除外する。
+
+- `.gitignore` に記載されているディレクトリ/ファイルは README 本文・ディレクトリ構成図・技術スタック一覧すべてから除外
+- git 追跡対象に含まれないトップレベルディレクトリも原則除外（生成物・他リポジトリからの持ち込み・ローカル専用資材とみなす）
+- `.gitignore` が無い/空の場合はこのステップをスキップ
+- 判断に迷うディレクトリがあれば AskUserQuestion で確認し、創作せず聞く
+
+### 3. プロジェクト情報の自動検出
+
+除外対象を除いたうえで、検出されたマニフェストを Read して以下を抽出：
 
 | ファイル | 抽出項目 |
 | --- | --- |
@@ -37,7 +48,7 @@ README.mdを作成または差分更新します。既存があれば言語を�
 
 さらに、Glob で主要ディレクトリ（`src/**`, `app/**`, `lib/**`, `components/**` など）の構成を確認する。
 
-### 3. ユーザーへのヒアリング
+### 4. ユーザーへのヒアリング
 
 AskUserQuestion を使用：
 
@@ -46,7 +57,7 @@ AskUserQuestion を使用：
   - 例: ターゲットユーザー、主要機能、公開予定、ライセンスなど
   - 不要だと判断できるなら聞かない
 
-### 4. コンテンツ生成
+### 5. コンテンツ生成
 
 以下のセクションを含む README を生成：
 
@@ -57,7 +68,7 @@ AskUserQuestion を使用：
 
 出力言語は既存README追従、新規は日本語。
 
-### 5. diff プレビューと承認
+### 6. diff プレビューと承認
 
 - **新規作成時**: 生成した全文を提示したうえで AskUserQuestion で承認を取る
 - **更新時**: 既存内容との diff（追加行 `+` / 削除行 `-`）を提示し、AskUserQuestion で承認を取る
@@ -66,7 +77,7 @@ AskUserQuestion を使用：
   - 古くなった記述（削除済みスクリプト/依存）は削除
   - 手書き説明文も更新対象（保護しない）
 
-### 6. 書き込み
+### 7. 書き込み
 
 - 新規: Write で `README.md` を作成
 - 更新: Edit で差分を反映（全体書き換えが妥当な場合は Write）
@@ -77,3 +88,4 @@ AskUserQuestion を使用：
 - プレビュー・承認なしで書き込まない
 - 検出できなかった情報を勝手に創作しない（不明ならヒアリング、それでも不明ならセクションを省略）
 - 既存READMEの言語に合わせる。新規は日本語
+- `.gitignore` 記載のディレクトリ/ファイル、および git 追跡外のトップレベルディレクトリは README に登場させない（ディレクトリ構成図・機能一覧・技術スタック全てで除外）
