@@ -10,7 +10,7 @@ allowed-tools: Bash(ls *), Bash(cat *), Bash(diff *), Bash(find *), Read, Write,
 
 - Working directory: !`pwd`
 - 既存README有無: !`ls README.md 2>/dev/null || echo "NOT_FOUND"`
-- マニフェストファイル検出: !`ls package.json pyproject.toml requirements.txt Cargo.toml go.mod Gemfile composer.json 2>/dev/null`
+- マニフェストファイル検出: !`ls package.json pyproject.toml requirements.txt Cargo.toml go.mod Gemfile composer.json 2>/dev/null || true`
 - ディレクトリ構成（2階層）: !`find . -maxdepth 2 -type d -not -path '*/node_modules*' -not -path '*/.git*' -not -path '*/dist*' -not -path '*/build*' -not -path '*/.next*' -not -path '*/__pycache__*' -not -path '*/target*' | sort`
 
 ## Your task
