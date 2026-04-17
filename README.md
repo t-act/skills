@@ -11,8 +11,6 @@
 | `/readme` | マニフェストから技術スタックを検出し、README を対話的に作成・更新 |
 | `/study-commit` | 技術書・Udemy などの学習コミットを自動ステージ＆prefix 付きでコミット |
 | `/til` | 複数リポジトリから今日の git 活動を集約し、TIL エントリを生成 |
-| `/translate-code` | コード内のコメント・ドキュメント・文字列を日英翻訳 |
-| `/aws-architecture-diagram` | AWS アーキテクチャ図を Draw.io XML 形式で生成（アイコン付き） |
 
 ## インストール
 
@@ -30,13 +28,11 @@ git clone <this-repo> ~/.claude/skills
 
 ```
 .
-├── aws-architecture-diagram/   # AWS図生成（references/, templates/ 同梱）
 ├── commit/                     # コミットメッセージ生成
 ├── create-pr/                  # PR作成
 ├── readme/                     # README 生成（本スキル）
 ├── study-commit/               # 学習用コミット
-├── til/                        # Today I Learned 集約
-└── translate-code/             # コードコメント翻訳（references/ 同梱）
+└── til/                        # Today I Learned 集約
 ```
 
 各ディレクトリに `SKILL.md` があり、frontmatter にメタ情報（`name`, `description`, `allowed-tools` など）、本文に実行手順が記載されている。
