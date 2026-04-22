@@ -1,8 +1,9 @@
 # 他リポジトリからコピーしたものは除外
 aws-architecture-diagram
 translate-code
+frontend-design
 
 # data
-examples.md
+study-commit/examples.md
 
 .DS_Store
