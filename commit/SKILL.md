@@ -1,9 +1,9 @@
 ---
 name: commit
-description: 変更内容を分析して3つのコミットメッセージ候補を生成し、ユーザーが選択してコミットを作成する
+description: 変更内容を論理的な単位に分割し、複数のコミットを順次作成する
 user-invocable: true
 disable-model-invocation: true
-allowed-tools: Bash(git add *), Bash(git status *), Bash(git commit *), AskUserQuestion
+allowed-tools: Bash(git add *), Bash(git status *), Bash(git commit *), Bash(git diff *), Bash(git reset *), Bash(git log *), AskUserQuestion
 ---
 
 ## Context
@@ -15,18 +15,24 @@ allowed-tools: Bash(git add *), Bash(git status *), Bash(git commit *), AskUserQ
 
 ## Your task
 
-変更内容を分析し、3つのコミットメッセージ候補を生成してユーザーに選択させます。
+変更内容を論理的な単位に分割し、複数のコミットに分けて順次作成します。
 
-1. **変更の分析**: diffとgit statusから変更の種類・影響範囲・目的を把握
-2. **候補の生成**: 異なる視点で3つのメッセージを作成
-   - Conventional Commits形式（feat/fix/docs/refactor/chore等）
-   - 日本語で記述（プレフィックスは英語）
-   - 各候補は異なる詳細度や視点を提供（例: 技術的詳細重視、ビジネス価値重視、シンプル表現）
-3. **ユーザー選択**: AskUserQuestionで3候補を提示し選択を受ける
-4. **コミット実行**: 必要に応じてgit addし、選択されたメッセージでコミット
+1. **変更の分析**: diffとgit statusから論理的に独立した変更単位を特定
+   - 機能追加・バグ修正・リファクタ・ドキュメント・設定変更など目的別に分離
+   - 無関係な変更を1つのコミットにまとめない
+   - 単一目的の変更しかない場合は分割せず1コミットとする
+2. **分割案の提示**: AskUserQuestionで分割案をユーザーに提示し承認を受ける
+   - 各コミットに含めるファイルとコミットメッセージを列挙
+   - 分割が不要な場合は単一コミット案として提示
+3. **順次コミット実行**: 承認された分割案に従って先頭から順にコミット
+   - `git reset` で一度ステージをクリアしてから、対象ファイルのみを `git add`
+   - コミットメッセージでコミット
+   - すべての分割が完了するまで繰り返す
 
 ## Constraint
 
 - Claude co-authorshipフッターは不要
-- メッセージは日本語（プレフィックスのみ英語）
+- メッセージは日本語（プレフィックスのみ英語、Conventional Commits形式）
 - 1行で完結（本文なし）
+- 分割単位はファイル単位（同一ファイル内の hunk 分割は行わない）
+- 同一ファイルに複数の目的が混在している場合はその旨をユーザーに伝え、まとめて1コミットとするか確認する
