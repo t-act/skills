@@ -9,9 +9,9 @@ allowed-tools: Bash(git add *), Bash(git status *), Bash(git commit *), Bash(git
 ## Context
 
 - Current git status: !`git status`
-- Current git diff (staged and unstaged changes): !`git diff HEAD`
+- Current git diff (staged and unstaged changes): !`git diff HEAD 2>/dev/null || { echo "(no HEAD yet — showing staged + unstaged separately)"; git diff --cached; git diff; }`
 - Current branch: !`git branch --show-current`
-- Recent commits: !`git log --oneline -10`
+- Recent commits: !`git log --oneline -10 2>/dev/null || echo "(no commits yet)"`
 
 ## Your task
 
