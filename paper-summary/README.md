@@ -1,0 +1,56 @@
+# paper-summary
+
+論文 (PDF / Markdown など) を読み込み、**論文タイトル名のディレクトリ**を作って、その中に**日本語要約 HTML** と変換後の中間 Markdown を生成する Claude Code スキルです。
+
+## 何ができるか
+
+入力ファイルを1つ渡すだけで、以下が自動生成されます。
+
+```
+<出力先>/<論文タイトル>/
+├── summary.html          # 日本語要約 HTML（単一ファイル・外部依存なし）
+└── <入力basename>.md     # markitdown による変換後の中間 Markdown
+```
+
+- **summary.html** … TL;DR・背景・手法・実験結果・個人的ポイントなどを、論文の構成に合わせて日本語でまとめた読みやすい HTML。スタイル内蔵でそのままブラウザで開けます。
+- **中間 Markdown** … PDF 等を変換した素の Markdown。再実行時はこれを再利用するので、変換は1回だけです。
+- 論文タイトルのディレクトリは、後から自分の手書きメモ (`notes.md` など) を置く場所としても使えます（スキルがそれらを上書き・削除することはありません）。
+
+## 使い方
+
+Claude Code のプロンプトでスキルを呼び出します。
+
+```
+/paper-summary <入力ファイル(PDF/md)> [出力先親ディレクトリ]
+```
+
+### 引数
+
+| 引数 | 必須 | 説明 |
+| --- | --- | --- |
+| 入力ファイル | ✅ | 要約したい論文。PDF / Markdown / DOCX / PPTX など markitdown が扱える形式 |
+| 出力先親ディレクトリ | 任意 | この直下に `<論文タイトル>/` を作成。**未指定なら入力ファイルと同階層の `summary/` を使用**（なければ作成） |
+
+### 例
+
+```
+# PDF を要約。出力は ./summary/<論文タイトル>/ に生成される
+/paper-summary papers/attention-is-all-you-need.pdf
+
+# 出力先を明示する場合
+/paper-summary papers/foo.pdf output/
+```
+
+## 事前準備
+
+- 変換に [markitdown](https://github.com/microsoft/markitdown) を `uvx` 経由で使います。**[uv](https://github.com/astral-sh/uv) がインストールされている**ことが前提です。
+- 初回実行時のみ markitdown の依存パッケージ（数十 MB）がダウンロードされます。
+
+## 挙動のポイント
+
+- 論文タイトルは中間 Markdown の冒頭（Abstract 直前）から Claude が抽出し、ファイル名向けにサニタイズします。
+- `summary.html` が既に存在する場合は、**上書きするか確認**してから進めます。
+- 中間 Markdown が既にある場合は再変換せず流用します。
+- 要約は日本語で書きますが、技術用語・固有名詞・モデル名は原表記を保ちます。事実の捏造や出典外の補足は行いません。
+
+詳細な処理ステップは [SKILL.md](./SKILL.md) を参照してください。
