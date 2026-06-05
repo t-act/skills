@@ -89,12 +89,56 @@ HTML はテンプレート固定ではなく、論文の構成に合わせて内
 - **表**: 数値・比較は `<table>` で再構成する
 - **個人的ポイント**: 末尾に印象に残った示唆・補足を入れる
 
-スタイルは以下を満たす単一 HTML ファイル:
+### スタイル: Apple デザインシステム
 
-- 外部 CSS / JS 依存なし (`<style>` を `<head>` 内に内蔵)
-- レスポンシブ (`max-width: 820px` 程度、`viewport` メタタグを含める)
-- 日本語フォント優先 (`-apple-system, "Hiragino Sans", "Yu Gothic", sans-serif`)
-- 見やすい配色 (淡い背景、十分なコントラスト、行間 1.7 以上)
+単一 HTML ファイル (外部 CSS / JS 依存なし、`<style>` を `<head>` 内に内蔵) とし、Apple の Web デザイン言語を「読み物」向けに適用する。"photography-first" の代わりに "content-first" — 装飾 (枠線・グラデーション・影) を極力排し、余白・タイポグラフィ・単一アクセントで構成する。
+
+`<head>` の `<style>` 冒頭に以下の CSS 変数を定義し、配色・文字はこのトークンを参照する (ハードコードした hex を直接散らさない):
+
+```css
+:root {
+  /* color */
+  --primary: #0066cc;        /* Action Blue — 唯一のアクセント。リンク・強調・罫線アクセント */
+  --primary-focus: #0071e3;  /* フォーカスリング */
+  --ink: #1d1d1f;            /* 見出し・本文 (純黒は使わない) */
+  --ink-muted-80: #333333;   /* やや弱い本文 */
+  --ink-muted-48: #7a7a7a;   /* キャプション・注記 */
+  --canvas: #ffffff;         /* 本文の地 */
+  --canvas-parchment: #f5f5f7; /* ページ背景・TL;DR/カード面 (Apple の象徴的オフホワイト) */
+  --surface-tile: #272729;   /* 強調したい囲み (任意・濃色タイル) */
+  --on-dark: #ffffff;
+  --hairline: #e0e0e0;       /* 表・カードの 1px ヘアライン */
+  --divider-soft: #f0f0f0;   /* セクション区切りの細線 */
+  /* radius */
+  --r-sm: 8px; --r-md: 11px; --r-lg: 18px; --r-pill: 9999px;
+  /* spacing (8px ベース) */
+  --s-xs: 8px; --s-sm: 12px; --s-md: 17px; --s-lg: 24px; --s-xl: 32px; --s-xxl: 48px; --s-section: 80px;
+}
+```
+
+タイポグラフィ (SF Pro。Apple 端末では `-apple-system` が実機 SF Pro に解決される。日本語は Hiragino を続ける):
+
+- フォントスタック: `"SF Pro Text", -apple-system, BlinkMacSystemFont, system-ui, "Hiragino Sans", "Yu Gothic", sans-serif`。見出しは `"SF Pro Display"` を先頭に。
+- **本文 body**: 17px / weight 400 / line-height 1.47 / letter-spacing -0.011em (16px ではなく **17px**)。
+- **見出し**: weight **600** (700 ではない) + 負の letter-spacing で "Apple tight" を出す。論文タイトル(h1) 約 40–48px / line-height 1.1 / letter-spacing -0.01em、セクション見出し(h2) 28–34px、小見出し(h3) 21px。
+- weight は 300 / 400 / 600 / 700 のみ使う (**500 は使わない**)。リード文に稀に 300 を使ってよい。
+
+レイアウト・装飾:
+
+- レスポンシブ。本文カラム `max-width: 760px` 程度を中央寄せ、`viewport` メタタグを含める。ページ背景は `--canvas-parchment`、本文面は `--canvas`。
+- 余白は 8px ベース (`--s-*`)。セクション間は広く取り (40–80px)、見出し上には十分な "air" を置く。
+- **影は原則使わない。** Apple の影はただ1つ (製品写真用) のみ。カード・ボタン・テキストに影は付けない。区切りはヘアライン (`--hairline` / `--divider-soft`) か面色の変化で表現する。
+- グラデーションは使わない。
+- リンク・アクセント色は `--primary` (Action Blue) のみ。第2のブランド色を導入しない。
+
+各パーツの当て方:
+
+- **ヘッダー**: 論文タイトル(原題)を h1。著者・会議/出版情報・外部リンクは `--ink-muted-48` のキャプション。下端に `--divider-soft` の 1px 区切り。
+- **TL;DR ボックス**: `--canvas-parchment` 面 + `--r-lg` (18px) 角丸 + 左に `--primary` の 3–4px アクセントバー。影なし。3〜5 行の要点。
+- **本文セクション**: 「背景・動機」「手法」「実験・結果」「議論」「結論」など論文構成に応じて柔軟に。
+- **表**: `<table>` で再構成。横罫は `--hairline` の 1px のみ、縦罫なし。ヘッダ行は `--canvas-parchment` 背景 + weight 600。角丸 `--r-md`。
+- **強調/引用**: 特に際立たせたい一節は濃色タイル (`--surface-tile` 背景 + `--on-dark` 文字 + `--r-lg`) を任意で使ってよい (Apple の light↔dark 交互リズム)。多用しない。
+- **個人的ポイント**: 末尾。`--canvas-parchment` 面で本文と差をつける。
 
 `Write` で `<出力先親ディレクトリ>/<論文タイトル>/summary.html` に書き出す。
 
