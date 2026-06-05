@@ -7,3 +7,6 @@ frontend-design
 study-commit/examples.md
 
 .DS_Store
+
+# editor
+*.swp
