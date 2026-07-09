@@ -102,56 +102,64 @@ HTML はテンプレート固定ではなく、論文の構成に合わせて内
 - **表**: 数値・比較は `<table>` で再構成する
 - **個人的ポイント**: 末尾に印象に残った示唆・補足を入れる
 
-### スタイル: Apple デザインシステム
+### スタイル: Claude (Anthropic) デザインシステム
 
-単一 HTML ファイル (外部 CSS / JS 依存なし、`<style>` を `<head>` 内に内蔵) とし、Apple の Web デザイン言語を「読み物」向けに適用する。"photography-first" の代わりに "content-first" — 装飾 (枠線・グラデーション・影) を極力排し、余白・タイポグラフィ・単一アクセントで構成する。
+単一 HTML ファイル (外部 CSS / JS 依存なし、`<style>` を `<head>` 内に内蔵) とし、Anthropic Claude.com の「温かいクリーム地 × セリフ見出し × コーラルの単一アクセント」というエディトリアルな世界観を「読み物」向けに適用する。雑誌のロングフォーム記事のように、余白を広く取り、セリフ見出しと humanist sans 本文を組み合わせる。
 
 `<head>` の `<style>` 冒頭に以下の CSS 変数を定義し、配色・文字はこのトークンを参照する (ハードコードした hex を直接散らさない):
 
 ```css
 :root {
   /* color */
-  --primary: #0066cc;        /* Action Blue — 唯一のアクセント。リンク・強調・罫線アクセント */
-  --primary-focus: #0071e3;  /* フォーカスリング */
-  --ink: #1d1d1f;            /* 見出し・本文 (純黒は使わない) */
-  --ink-muted-80: #333333;   /* やや弱い本文 */
-  --ink-muted-48: #7a7a7a;   /* キャプション・注記 */
-  --canvas: #ffffff;         /* 本文の地 */
-  --canvas-parchment: #f5f5f7; /* ページ背景・TL;DR/カード面 (Apple の象徴的オフホワイト) */
-  --surface-tile: #272729;   /* 強調したい囲み (任意・濃色タイル) */
-  --on-dark: #ffffff;
-  --hairline: #e0e0e0;       /* 表・カードの 1px ヘアライン */
-  --divider-soft: #f0f0f0;   /* セクション区切りの細線 */
+  --primary: #cc785c;          /* Coral — 唯一のアクセント (リンク・CTA・強調) */
+  --primary-active: #a9583e;   /* コーラルの濃いめ (アクティブ) */
+  --ink: #141413;              /* 見出し・強調テキスト (温かみのある黒) */
+  --body: #3d3d3a;             /* 本文 */
+  --body-strong: #252523;      /* 強調段落・リード */
+  --muted: #6c6a64;            /* 小見出し・キャプション */
+  --muted-soft: #8e8b82;       /* 注記・細字 */
+  --canvas: #faf9f5;           /* ページの地 (温かいクリーム。純白にしない) */
+  --surface-soft: #f5f0e8;     /* 区切り帯・ごく淡いバンド */
+  --surface-card: #efe9de;     /* カード・TL;DR 面 (canvas より一段濃いクリーム) */
+  --surface-dark: #181715;     /* 濃色面 (コード・強調引用) */
+  --surface-dark-soft: #1f1e1b;/* 濃色面内のコードブロック地 */
+  --on-dark: #faf9f5;          /* 濃色面上の文字 (クリーム白) */
+  --on-dark-soft: #a09d96;     /* 濃色面上の弱い文字 */
+  --on-primary: #ffffff;       /* コーラル面上の文字 */
+  --hairline: #e6dfd8;         /* クリーム面の 1px 罫 */
+  --hairline-soft: #ebe6df;    /* 同一バンド内のごく淡い区切り */
+  --accent-teal: #5db8a6;      /* 補助アクセント (ごく稀に) */
   /* radius */
-  --r-sm: 8px; --r-md: 11px; --r-lg: 18px; --r-pill: 9999px;
-  /* spacing (8px ベース) */
-  --s-xs: 8px; --s-sm: 12px; --s-md: 17px; --s-lg: 24px; --s-xl: 32px; --s-xxl: 48px; --s-section: 80px;
+  --r-sm: 6px; --r-md: 8px; --r-lg: 12px; --r-xl: 16px; --r-pill: 9999px;
+  /* spacing (4px ベース) */
+  --s-xs: 8px; --s-sm: 12px; --s-md: 16px; --s-lg: 24px; --s-xl: 32px; --s-xxl: 48px; --s-section: 96px;
 }
 ```
 
-タイポグラフィ (SF Pro。Apple 端末では `-apple-system` が実機 SF Pro に解決される。日本語は Hiragino を続ける):
+タイポグラフィ (Copernicus / StyreneB は Anthropic 専用フォントのため、オープンな代替を使う。日本語は見出しに明朝、本文にゴシックを当ててセリフ/サンセリフの対比を保つ):
 
-- フォントスタック: `"SF Pro Text", -apple-system, BlinkMacSystemFont, system-ui, "Hiragino Sans", "Yu Gothic", sans-serif`。見出しは `"SF Pro Display"` を先頭に。
-- **本文 body**: 17px / weight 400 / line-height 1.47 / letter-spacing -0.011em (16px ではなく **17px**)。
-- **見出し**: weight **600** (700 ではない) + 負の letter-spacing で "Apple tight" を出す。論文タイトル(h1) 約 40–48px / line-height 1.1 / letter-spacing -0.01em、セクション見出し(h2) 28–34px、小見出し(h3) 21px。
-- weight は 300 / 400 / 600 / 700 のみ使う (**500 は使わない**)。リード文に稀に 300 を使ってよい。
+- **見出し (セリフ)**: `"Tiempos Headline", "Cormorant Garamond", "EB Garamond", "Hiragino Mincho ProN", "Yu Mincho", Garamond, serif`。**weight 400** (太字にしない) + 負の letter-spacing。論文タイトル(h1) 約 44–48px / line-height 1.1 / letter-spacing -1px、セクション見出し(h2) 約 34–36px / -0.5px、小見出し(h3) 約 26–28px / -0.3px。負のトラッキングを必ず効かせる (セリフの締まった「考え抜かれた」声がこのデザインの核)。
+- **本文 (humanist sans)**: `"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif`。本文 16px / weight 400 / line-height 1.55。ラベル・強調句は weight 500。
+- **コード/等幅**: `"JetBrains Mono", ui-monospace, SFMono-Regular, monospace`。14px / line-height 1.6。
+- weight は 400 / 500 が基本。見出しは 400 のまま (Bold にしない)。geometric sans (Helvetica/Arial) は使わない (humanist の温かみが失われる)。
 
 レイアウト・装飾:
 
-- レスポンシブ。本文はウィンドウ幅に追従させる (固定の最大幅で頭打ちにしない)。本文面 (`--canvas`) は左右に余白 (`--s-lg`〜`--s-xl` 程度) を残してウィンドウいっぱいに広げる。`viewport` メタタグを含める。ページ背景は `--canvas-parchment`。ラッパーに `max-width` を設ける場合でも `100%` とし、固定 px で制限しない。
-- 余白は 8px ベース (`--s-*`)。セクション間は広く取り (40–80px)、見出し上には十分な "air" を置く。
-- **影は原則使わない。** Apple の影はただ1つ (製品写真用) のみ。カード・ボタン・テキストに影は付けない。区切りはヘアライン (`--hairline` / `--divider-soft`) か面色の変化で表現する。
-- グラデーションは使わない。
-- リンク・アクセント色は `--primary` (Action Blue) のみ。第2のブランド色を導入しない。
+- レスポンシブ。本文は**基本ウィンドウ幅に追従**させつつ、**読みやすさのため最大幅 `max-width: 820px` で頭打ち**にして中央寄せする (画面端まで文字が届かないようにする)。本文面の左右には余白 (`--s-lg`〜`--s-xl` 程度) を常に残す。`viewport` メタタグを含める。
+- ページ背景・本文面ともに `--canvas` (クリーム)。Apple 風の白いカードで本文を囲わず、クリーム地に直接組むエディトリアル構成にする。
+- 余白は 4px ベース (`--s-*`)。セクション間は広く取り (48–96px)、見出し上には十分な余白を置く。カード内側は `--s-xl` (32px) 程度とゆったり。
+- **影は控えめ。** 基本は影なし (flat) とし、区切りはヘアライン (`--hairline` / `--hairline-soft`) か面色の差 (クリーム ↔ カード ↔ 濃色) で表現する。強い装飾的な影・グラデーションは使わない。
+- アクセント色は `--primary` (Coral) を基本とし、リンク・強調・コールアウトに使う。teal/amber は補助でごく稀に。クリーム ↔ 濃色 (`--surface-dark`) の対比がページのリズムを作る。
 
 各パーツの当て方:
 
-- **ヘッダー**: 論文タイトル(原題)を h1。著者・会議/出版情報・外部リンクは `--ink-muted-48` のキャプション。下端に `--divider-soft` の 1px 区切り。
-- **TL;DR ボックス**: `--canvas-parchment` 面 + `--r-lg` (18px) 角丸 + 左に `--primary` の 3–4px アクセントバー。影なし。3〜5 行の要点。
-- **本文セクション**: 「背景・動機」「手法」「実験・結果」「議論」「結論」など論文構成に応じて柔軟に。
-- **表**: `<table>` で再構成。横罫は `--hairline` の 1px のみ、縦罫なし。ヘッダ行は `--canvas-parchment` 背景 + weight 600。角丸 `--r-md`。
-- **強調/引用**: 特に際立たせたい一節は濃色タイル (`--surface-tile` 背景 + `--on-dark` 文字 + `--r-lg`) を任意で使ってよい (Apple の light↔dark 交互リズム)。多用しない。
-- **個人的ポイント**: 末尾。`--canvas-parchment` 面で本文と差をつける。
+- **ヘッダー**: 論文タイトル(原題)を h1 (セリフ)。著者・会議/出版情報・外部リンクは `--muted` のキャプション。下端に `--hairline` の 1px 区切り。リンクは `--primary` (Coral)。
+- **TL;DR ボックス**: `--surface-card` 面 + `--r-lg` (12px) 角丸 + 左に `--primary` (Coral) の 3–4px アクセントバー。3〜5 行の要点。
+- **本文セクション**: 「背景・動機」「手法」「実験・結果」「議論」「結論」など論文構成に応じて柔軟に。本文色は `--body`、リードや強調段落は `--body-strong`。
+- **表**: `<table>` で再構成。横罫は `--hairline` の 1px のみ、縦罫なし。ヘッダ行は `--surface-card` 背景 + weight 500。角丸 `--r-md`。
+- **コード/数式・強調引用**: 際立たせたい一節やコードは濃色面 (`--surface-dark` 背景 + `--on-dark` 文字 + `--r-lg`) を使う。コードは `JetBrains Mono`。多用しない。
+- **コールアウト**: 特に強調したい結論は coral 面 (`--primary` 背景 + `--on-primary` 文字 + `--r-lg`) を稀に使ってよい。
+- **個人的ポイント**: 末尾。`--surface-card` 面で本文と差をつける。
 
 `Write` で `<出力先親ディレクトリ>/<論文タイトル>/summary.html` に書き出す。
 
