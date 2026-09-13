@@ -8,7 +8,7 @@
 | --- | --- |
 | `/commit` | 変更内容を分析し、コミットメッセージ候補を3つ提示して選択・コミット |
 | `/create-pr` | main との差分から PR 説明文を自動生成し、GitHub PR を作成 |
-| `/new-worktree` | 作業内容からブランチ名を3案提示し、最新の origin から `.claude/worktrees/` にワークツリーを切ってセッションごと移動 |
+| `/init-work` | `claude -w` で起動したワークツリーで、作業内容からブランチ名を3案提示し、選んだ名前にブランチを改名 |
 | `/paper-summary` | 論文 (PDF/md) を読み込み、タイトル名ディレクトリに日本語要約 HTML を生成（[README](./paper-summary/README.md)） |
 | `/readme` | マニフェストから技術スタックを検出し、README を対話的に作成・更新 |
 | `/study-commit` | 技術書・Udemy などの学習コミットを自動ステージ＆prefix 付きでコミット |
@@ -32,7 +32,7 @@ git clone <this-repo> ~/.claude/skills
 .
 ├── commit/                     # コミットメッセージ生成
 ├── create-pr/                  # PR作成
-├── new-worktree/               # ブランチ名決定とワークツリー初期化
+├── init-work/                  # ワークツリーのブランチ名決定
 ├── paper-summary/              # 論文の日本語要約 HTML 生成
 ├── readme/                     # README 生成（本スキル）
 ├── study-commit/               # 学習用コミット
