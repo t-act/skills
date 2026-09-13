@@ -10,6 +10,7 @@ allowed-tools: Bash(gh *), Bash(jq *), Bash(date *), Bash(git *), Read, Edit, Wr
 
 - Today (JST): !`date +%Y-%m-%d`
 - Today (MMDD): !`date +%m%d`
+- Year (YYYY): !`date +%Y`
 - TIL file name (YYYY-MM): !`date +%Y-%m`
 - GitHub login: !`gh api user --jq .login`
 
@@ -20,7 +21,8 @@ allowed-tools: Bash(gh *), Bash(jq *), Bash(date *), Bash(git *), Read, Edit, Wr
 
 ### Step 0: 現在のTILファイルを読み込む
 
-- Read ツールで `~/Dev/til/YYYY-MM.md`（Context の TIL file name を使用）を読み込む
+- Read ツールで `~/Dev/til/YYYY/YYYY-MM.md`（Context の Year と TIL file name を使用。例: `~/Dev/til/2026/2026-08.md`）を読み込む
+- 月次ファイルは年ごとのサブディレクトリ（`YYYY/`）配下にある。リポジトリ直下ではないことに注意する
 - ファイルが存在しない場合はスキップする（Step 4 で新規作成）
 
 ### Step 1: 今日のgit活動をリモートから収集
@@ -66,11 +68,29 @@ gh api "repos/<owner>/<repo>/commits?author=${LOGIN}&since=${SINCE_UTC}&until=${
 - メッセージは1行目（サマリ）のみ使う。
 - コミットが0件のリポジトリは無視する。
 
+**1-c. 作業ブランチのコミットを拾う**。`contributionsCollection` はデフォルトブランチにマージ済みのコミットしか計上しないため、1-a だけでは未マージの作業ブランチが漏れる。今日 push のあったリポジトリについて、全ブランチを走査する:
+
+```bash
+for REPO in $(gh repo list "${LOGIN}" --limit 100 --json nameWithOwner,pushedAt \
+                --jq ".[] | select(.pushedAt > \"${YESTERDAY}\") | .nameWithOwner"); do
+  [ "$REPO" = "${LOGIN}/til" ] && continue
+  for BR in $(gh api "repos/${REPO}/branches?per_page=100" --jq '.[].name' 2>/dev/null); do
+    MSGS=$(gh api "repos/${REPO}/commits?sha=${BR}&author=${LOGIN}&since=${SINCE_UTC}&until=${UNTIL_UTC}" \
+             --jq '.[].commit.message | split("\n")[0]' 2>/dev/null)
+    [ -n "$MSGS" ] && printf '=== %s @ %s ===\n%s\n' "$REPO" "$BR" "$MSGS"
+  done
+done
+```
+
+- `YESTERDAY` は `$(date -j -v-1d +%Y-%m-%d)`。`pushedAt` で当日活動のあったリポジトリに絞り、API 呼び出しを抑える。
+- 1-b の結果と重複するコミットは SHA またはメッセージで重複排除し、ドラフトではリポジトリごとに1行へまとめる。
+- ブランチ名（例: `feature/migrate-cloudflare`）はドラフト生成時のトピック抽出のヒントとして使ってよいが、エントリ本文には書かない。
+
 ### Step 2: エントリのドラフト生成
 
 収集結果をもとに、TILのエントリ形式でドラフトを生成する。
 
-フォーマット:
+フォーマット（日付の表記は既存ファイルの直近エントリに合わせる。`MMDD` と `MM-DD` が月によって混在する）:
 ```
 MMDD
 - 学習内容1
@@ -96,20 +116,22 @@ MMDD
 
 ### Step 4: TILファイルへの追記とコミット
 
-- 対象ファイル: `~/Dev/til/YYYY-MM.md`（当月）
-- ファイルが存在しない場合は新規作成する
+- 対象ファイル: `~/Dev/til/YYYY/YYYY-MM.md`（当月。例: `~/Dev/til/2026/2026-08.md`）
+- ファイルが存在しない場合は新規作成する（年サブディレクトリ `YYYY/` 直下に作る。リポジトリ直下には作らない）
 - 今日の日付のエントリが既に存在する場合:
   - 既存エントリを上書きする
 - Edit ツールで末尾に追記する
 - Step 3 でコミット＆プッシュを選択した場合:
+  - 追記前に `git pull --rebase` でリモートを取り込む（別端末からの当日追記と衝突しやすいため）
   - `update: YYYY-MM-DD` 形式でコミットする（既存の慣習に従う）
   - コミット後に `git push` でリモートにプッシュする
 
 ## Constraint
 
 - コミット収集はすべて `gh`（リモート）から行い、ローカルリポジトリの走査はしない
+- 月次ファイルは年サブディレクトリ配下（`~/Dev/til/YYYY/YYYY-MM.md`）にある。リポジトリ直下に作成・追記しない
 - エントリは過去の記述スタイルに合わせる（簡潔に）
-- 日付は `MMDD` 形式（ゼロ埋め、ハイフンなし）
+- 日付の表記は Step 0 で読み込んだ既存ファイルの直近エントリに合わせる（`MMDD` と `MM-DD` が月によって混在するため）。新規ファイルの場合は `MMDD` 形式（ゼロ埋め、ハイフンなし）
 - 日付境界は JST で判定する（UTC との 9 時間差に注意）
 - tilリポジトリ自体のコミットは収集対象から除外する
-- `contributionsCollection` はデフォルトブランチ等への「コントリビューションとして計上されたコミット」を対象とするため、まだマージされていない作業ブランチのみのコミットは収集されない場合がある
+- `contributionsCollection` はデフォルトブランチ等への「コントリビューションとして計上されたコミット」しか返さないため、1-a だけに頼らず 1-c のブランチ走査を必ず実行する
