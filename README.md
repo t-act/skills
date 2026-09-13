@@ -1,18 +1,28 @@
 # Claude Code Skills
 
-個人用の [Claude Code](https://docs.claude.com/en/docs/claude-code) スキル集。日々の開発でよく繰り返す作業（コミット、PR作成、学習記録など）をスラッシュコマンドとして定義し、`~/.claude/skills/` 配下に配置して利用する。
+個人用の [Claude Code](https://docs.claude.com/en/docs/claude-code) スキル集。日々の開発でよく繰り返す作業（コミット、学習記録など）と、HTML や Python コードを書くときの規約をスキルとして定義し、`~/.claude/skills/` 配下に配置して利用する。
 
 ## 収録スキル
+
+### スラッシュコマンド
 
 | コマンド | 概要 |
 | --- | --- |
 | `/commit` | 変更内容を分析し、コミットメッセージ候補を3つ提示して選択・コミット |
-| `/create-pr` | main との差分から PR 説明文を自動生成し、GitHub PR を作成 |
 | `/init-work` | `claude -w` で起動したワークツリーで、作業内容からブランチ名を3案提示し、選んだ名前にブランチを改名 |
 | `/paper-summary` | 論文 (PDF/md) を読み込み、タイトル名ディレクトリに日本語要約 HTML を生成（[README](./paper-summary/README.md)） |
 | `/readme` | マニフェストから技術スタックを検出し、README を対話的に作成・更新 |
 | `/study-commit` | 技術書・Udemy などの学習コミットを自動ステージ＆prefix 付きでコミット |
 | `/til` | 複数リポジトリから今日の git 活動を集約し、TIL エントリを生成 |
+
+### 規約・ガイド
+
+該当する作業（HTML の出力、Python コードの記述）で Claude が自動的に参照する。`/` から呼び出すこともできる。
+
+| スキル | 概要 |
+| --- | --- |
+| `html-style-guide` | 単一 HTML を出力するときの統一スタイルガイド。Claude 風のデザイントークンとコンポーネント（表、コード差分など）をライト/ダーク両対応で定義（見本: [preview.html](./html-style-guide/preview.html)） |
+| `python-code-quality` | Python コードの品質規約。意味のある値の定数化、docstring とコメントに Why not を書くこと、ruff の実行を定める |
 
 ## インストール
 
@@ -31,12 +41,13 @@ git clone <this-repo> ~/.claude/skills
 ```
 .
 ├── commit/                     # コミットメッセージ生成
-├── create-pr/                  # PR作成
+├── html-style-guide/           # HTML 出力の統一スタイルガイド
 ├── init-work/                  # ワークツリーのブランチ名決定
 ├── paper-summary/              # 論文の日本語要約 HTML 生成
+├── python-code-quality/        # Python コード品質規約
 ├── readme/                     # README 生成（本スキル）
 ├── study-commit/               # 学習用コミット
 └── til/                        # Today I Learned 集約
 ```
 
-各ディレクトリに `SKILL.md` があり、frontmatter にメタ情報（`name`, `description`, `allowed-tools` など）、本文に実行手順が記載されている。
+各ディレクトリに `SKILL.md` があり、frontmatter にメタ情報（`name`, `description`, `allowed-tools` など）、本文に実行手順や規約が記載されている。
