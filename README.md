@@ -1,6 +1,6 @@
 # Claude Code Skills
 
-個人用の [Claude Code](https://docs.claude.com/en/docs/claude-code) スキル集。日々の開発でよく繰り返す作業（コミット、学習記録など）と、HTML や Python コードを書くときの規約をスキルとして定義し、`~/.claude/skills/` 配下に配置して利用する。
+個人用の [Claude Code](https://docs.claude.com/en/docs/claude-code) スキル集。日々の開発でよく繰り返す作業（コミット、学習記録など）と、HTML や Python コード、日本語の技術文書を書くときの規約をスキルとして定義し、`~/.claude/skills/` 配下に配置して利用する。
 
 ## 収録スキル
 
@@ -17,11 +17,12 @@
 
 ### 規約・ガイド
 
-該当する作業（HTML の出力、Python コードの記述）で Claude が自動的に参照する。`/` から呼び出すこともできる。
+該当する作業（HTML の出力、Python コードの記述、日本語の技術文書の執筆）で Claude が自動的に参照する。`/` から呼び出すこともできる。
 
 | スキル | 概要 |
 | --- | --- |
 | `html-style-guide` | 単一 HTML を出力するときの統一スタイルガイド。Claude 風のデザイントークンとコンポーネント（表、コード差分など）をライト/ダーク両対応で定義（見本: [preview.html](./html-style-guide/preview.html)） |
+| `jp-tech-writing` | 日本語の技術文書・書籍原稿の文章規範。パラグラフライティング、論証の厳密さ、LLM っぽい表現の禁止、冗長の排除、Design doc と PR 説明文の結論先出しを定める |
 | `python-code-quality` | Python コードの品質規約。意味のある値の定数化、docstring とコメントに Why not を書くこと、ruff の実行を定める |
 
 ## インストール
@@ -43,6 +44,7 @@ git clone <this-repo> ~/.claude/skills
 ├── commit/                     # コミットメッセージ生成
 ├── html-style-guide/           # HTML 出力の統一スタイルガイド
 ├── init-work/                  # ワークツリーのブランチ名決定
+├── jp-tech-writing/            # 日本語技術文書の文章規範
 ├── paper-summary/              # 論文の日本語要約 HTML 生成
 ├── python-code-quality/        # Python コード品質規約
 ├── readme/                     # README 生成（本スキル）
